@@ -1,4 +1,4 @@
-import { Vector3 } from "three";
+import { Color, Vector3 } from "three";
 import { randFloat, randFloatSpread } from "three/src/math/MathUtils.js";
 
 export function getXYMaxAtZ(z: number, fov: number, aspect: number) {
@@ -25,3 +25,9 @@ export function getPointerCoordsAtZ(cursorPos: Vector3, depth: number) {
   cursorPos.set(cursorPos.x * scale, cursorPos.y * scale, -depth);
   return cursorPos;
 }
+
+export function getRandomColor() {
+  return new Color(Math.random(), Math.random(), Math.random());
+}
+
+export const pointerWorld = new Vector3();

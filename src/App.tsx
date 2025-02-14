@@ -7,8 +7,7 @@ function App() {
   return (
     <Canvas camera={{ position: [0, 0, 0], fov: SETTINGS.fov }}>
       <Spheres3DContainer />
-      <directionalLight color="blue" position={[0, -5, 0]} />
-      <directionalLight color="purple" position={[0, 5, 0]} />
+      <ambientLight />
     </Canvas>
   );
 }
