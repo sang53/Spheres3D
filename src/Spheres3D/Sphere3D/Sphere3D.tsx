@@ -7,7 +7,7 @@ import {
   getRandomCoordsInView,
   pointerWorld,
 } from "../../utils/Helpers/Helpers";
-import { damp3 } from "maath/easing";
+import { damp3, dampC } from "maath/easing";
 
 export default function Sphere3D({
   initPos,
@@ -31,21 +31,38 @@ export default function Sphere3D({
     } else {
       damp3(sphereMesh.position, pointerWorld, 50, delta, 2);
 
-      // case: sphere is getting closer to screen => change appearance to show it will disappear soon
-
-      sphereMesh.material.color.lerp(initColour, 0.05);
+      dampC(
+        sphereMesh.material.color,
+        sphereMesh.userData.destColour,
+        0.2,
+        delta
+      );
       if (
-        Math.abs(sphereMesh.material.color.getHex() - initColour.getHex()) < 10
+        Math.abs(
+          sphereMesh.material.color.getHex() -
+            sphereMesh.userData.destColour.getHex()
+        ) < 10 ||
+        sphereMesh.material.color.getHex() > 0xfefefe
       )
-        initColour = getRandomColor();
-      sphereMesh.rotateX(0.01);
-      sphereMesh.rotateY(0.01);
-      sphereMesh.rotateZ(0.01);
+        sphereMesh.userData.destColour = getRandomColor();
+      sphereMesh.rotateX(Math.random() / 50);
+      sphereMesh.rotateY(Math.random() / 50);
+      sphereMesh.rotateZ(Math.random() / 50);
+
+      // if close to border, change appearance to show that it is going to disappear soon
+      if (sphereMesh.position.z >= SETTINGS.zMinMax[0] - 50) {
+        sphereMesh.material.color.lerp(sphereMesh.userData.destColour, 0.1);
+      }
     }
   });
 
   return (
-    <mesh position={initPos} ref={sphereRef}>
+    <mesh
+      position={initPos}
+      ref={sphereRef}
+      userData={{ destColour: initColour }}
+      name="sphere"
+    >
       <sphereGeometry args={sphereProps} />
       <meshStandardMaterial color={getRandomColor()} wireframe={wireframe} />
     </mesh>

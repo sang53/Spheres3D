@@ -8,6 +8,7 @@ export default function CursorSphere({
   colour = "white",
   wireframe = true,
   sphereProps = [1, 12, 5],
+  visible = true,
 }: Props) {
   const sphereRef = useRef<Mesh>(null);
   const cursorPos = new Vector3();
@@ -21,9 +22,11 @@ export default function CursorSphere({
     getPointerCoordsAtZ(cursorPos, depth);
 
     sphereRef.current.position.set(cursorPos.x, cursorPos.y, -depth);
-    sphereRef.current.rotateX(0.01);
-    sphereRef.current.rotateY(0.01);
-    sphereRef.current.rotateZ(0.01);
+    if (visible) {
+      sphereRef.current.rotateX(0.01);
+      sphereRef.current.rotateY(0.01);
+      sphereRef.current.rotateZ(0.01);
+    }
   });
 
   return (
@@ -32,6 +35,8 @@ export default function CursorSphere({
       onClick={() => {
         console.log(sphereRef.current, startState);
       }}
+      visible={visible}
+      name="cursorSphere"
     >
       <sphereGeometry args={sphereProps} />
       <meshStandardMaterial color={colour} wireframe={wireframe} />
@@ -44,4 +49,5 @@ interface Props {
   colour?: Color;
   wireframe?: boolean;
   sphereProps?: readonly [number, number, number];
+  visible?: boolean;
 }

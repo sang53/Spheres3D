@@ -28,9 +28,12 @@ export default function Spheres3DContainer() {
 
   useFrame(({ pointer }) => {
     raycaster.setFromCamera(pointer, camera);
-    const intersects = raycaster.intersectObjects<
-      Mesh<BufferGeometry, MeshStandardMaterial>
-    >(scene.children, true);
+    const intersects = raycaster
+      .intersectObjects<Mesh<BufferGeometry, MeshStandardMaterial>>(
+        scene.children,
+        true
+      )
+      .slice(1);
 
     // previously hovered object not hit => reset position && colour
     hovObjs.forEach((hovObj) => {
@@ -44,7 +47,8 @@ export default function Spheres3DContainer() {
 
     // newly hovered objects => change colour
     intersects.forEach(({ object }) => {
-      object.material.color.addScalar(0.1);
+      if (object.name === "sphere")
+        object.material.color.lerp(object.userData.destColour, 0.2);
     });
 
     // reassign array of hovered objects
@@ -62,7 +66,7 @@ export default function Spheres3DContainer() {
           />
         );
       })}
-      <PointerUpdater zDepth={50} />
+      <PointerUpdater zDepth={Math.abs(75)} />
     </group>
   );
 }
