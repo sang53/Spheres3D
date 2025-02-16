@@ -1,45 +1,27 @@
-import { Color, useFrame, useThree } from "@react-three/fiber";
+import { Color, useFrame } from "@react-three/fiber";
 import { useRef } from "react";
-import { Mesh, Vector3 } from "three";
-import { getPointerCoordsAtZ } from "../Helpers/Helpers";
+import { getPointerCoordsAtZ, pointerWorld } from "../Helpers/Helpers";
+import { SETTINGS } from "../../Spheres3D/Settings";
+import { sphereType, Tuple } from "../../Spheres3D/Types";
 
 export default function CursorSphere({
-  depth = 50,
-  colour = "white",
-  wireframe = true,
-  sphereProps = [1, 12, 5],
-  visible = true,
+  depth = SETTINGS.sphereMove.zDepthFocus,
+  sphereProps = SETTINGS.sphereGen.sphereProps,
 }: Props) {
-  const sphereRef = useRef<Mesh>(null);
-  const cursorPos = new Vector3();
-  const startState = useThree();
+  const sphereRef = useRef<sphereType>(null);
 
-  useFrame(({ pointer, camera }) => {
+  useFrame((state) => {
     if (!sphereRef.current) return;
 
-    cursorPos.set(pointer.x, pointer.y, 0);
-    cursorPos.unproject(camera);
-    getPointerCoordsAtZ(cursorPos, depth);
-
-    sphereRef.current.position.set(cursorPos.x, cursorPos.y, -depth);
-    if (visible) {
-      sphereRef.current.rotateX(0.01);
-      sphereRef.current.rotateY(0.01);
-      sphereRef.current.rotateZ(0.01);
-    }
+    // update pointerWorld Vector3 to line up with pointer at z = -depth
+    getPointerCoordsAtZ(state, pointerWorld, depth);
+    sphereRef.current.position.set(pointerWorld.x, pointerWorld.y, -depth);
   });
 
   return (
-    <mesh
-      ref={sphereRef}
-      onClick={() => {
-        console.log(sphereRef.current, startState);
-      }}
-      visible={visible}
-      name="cursorSphere"
-    >
+    <mesh ref={sphereRef} visible={false} name="cursorSphere">
       <sphereGeometry args={sphereProps} />
-      <meshStandardMaterial color={colour} wireframe={wireframe} />
+      <meshStandardMaterial />
     </mesh>
   );
 }
@@ -48,6 +30,6 @@ interface Props {
   depth?: number;
   colour?: Color;
   wireframe?: boolean;
-  sphereProps?: readonly [number, number, number];
+  sphereProps?: Readonly<Tuple<number>>;
   visible?: boolean;
 }

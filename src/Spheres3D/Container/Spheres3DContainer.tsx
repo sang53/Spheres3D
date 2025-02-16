@@ -5,58 +5,59 @@ import {
 } from "../../utils/Helpers/Helpers";
 import { SETTINGS } from "../Settings";
 import Sphere3D from "../Sphere3D/Sphere3D";
-import { useMemo } from "react";
-import { PointerUpdater } from "../PointerUpdater/PointerUpdater";
-import {
-  BufferGeometry,
-  Mesh,
-  MeshStandardMaterial,
-  PerspectiveCamera,
-} from "three";
+import { useRef } from "react";
+import { Color, Group, PerspectiveCamera } from "three";
+import { sphereType } from "../Types";
+
+const { sphereGen, sphereAnim } = SETTINGS;
 
 export default function Spheres3DContainer() {
-  const { camera, viewport, scene, raycaster } = useThree<
+  const { camera, viewport, raycaster } = useThree<
     RootState & { camera: PerspectiveCamera }
   >();
-  let hovObjs: Array<Mesh<BufferGeometry, MeshStandardMaterial>> = [];
+  const groupRef = useRef<Group>(null);
+  let hovObjs: Array<sphereType> = [];
 
-  const spherePos = useMemo(() => {
-    return Array.from({ length: SETTINGS.sphereNum }, () =>
-      getRandomCoordsInView(SETTINGS.zMinMax, camera.fov, viewport.aspect)
-    );
-  }, [camera.fov, viewport.aspect]);
+  const spherePos = Array.from({ length: sphereGen.num }, () =>
+    getRandomCoordsInView(sphereGen.zMinMax, camera.fov, viewport.aspect)
+  );
 
-  useFrame(({ pointer }) => {
+  useFrame(({ pointer, viewport }) => {
+    if (!groupRef.current) return;
+
+    // get all objects that intersects with pointer
     raycaster.setFromCamera(pointer, camera);
-    const intersects = raycaster
-      .intersectObjects<Mesh<BufferGeometry, MeshStandardMaterial>>(
-        scene.children,
-        true
-      )
-      .slice(1);
+    const intersects = raycaster.intersectObjects<sphereType>(
+      groupRef.current.children,
+      true
+    );
 
     // previously hovered object not hit => reset position && colour
     hovObjs.forEach((hovObj) => {
       if (intersects.some((hitObj) => hitObj.object === hovObj)) return;
 
+      // if previously hovered object not hovered anymore => reset position & colour
       hovObj.position.set(
-        ...getRandomCoordsInView(SETTINGS.zMinMax, camera.fov, viewport.aspect)
+        ...getRandomCoordsInView(sphereGen.zMinMax, camera.fov, viewport.aspect)
       );
       hovObj.material.color.set(getRandomColor());
     });
 
-    // newly hovered objects => change colour
+    // all hovered objects => speed up colour change
     intersects.forEach(({ object }) => {
-      if (object.name === "sphere")
-        object.material.color.lerp(object.userData.destColour, 0.2);
+      if (object.userData.destColour instanceof Color)
+        object.material.color.lerp(
+          object.userData.destColour,
+          sphereAnim.colourLerp
+        );
     });
 
-    // reassign array of hovered objects
+    // reassign array of hovered objects for next frame
     hovObjs = intersects.map(({ object }) => object);
   });
 
   return (
-    <group>
+    <group ref={groupRef}>
       {spherePos.map((position, idx) => {
         return (
           <Sphere3D
@@ -66,7 +67,6 @@ export default function Spheres3DContainer() {
           />
         );
       })}
-      <PointerUpdater zDepth={Math.abs(75)} />
     </group>
   );
 }

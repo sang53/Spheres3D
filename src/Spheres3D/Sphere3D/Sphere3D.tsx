@@ -1,59 +1,76 @@
-import { useFrame, ReactThreeFiber, useThree } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import { SETTINGS } from "../Settings";
 import { useRef } from "react";
-import { BufferGeometry, Color, Mesh, MeshStandardMaterial } from "three";
+import { Color, PerspectiveCamera } from "three";
 import {
+  getHexDiff,
   getRandomColor,
   getRandomCoordsInView,
   pointerWorld,
 } from "../../utils/Helpers/Helpers";
 import { damp3, dampC } from "maath/easing";
+import { sphereType, Tuple } from "../Types";
+
+const { sphereGen, sphereAnim, sphereMove } = SETTINGS;
 
 export default function Sphere3D({
   initPos,
   initColour,
-  sphereProps = SETTINGS.sphereProps,
-  wireframe = true,
+  sphereProps = sphereGen.sphereProps,
+  wireframe = sphereGen.wireframe,
 }: Props) {
-  const sphereRef = useRef<Mesh<BufferGeometry, MeshStandardMaterial>>(null);
-  const aspect = useThree((state) => state.viewport.aspect);
+  const sphereRef = useRef<sphereType>(null);
+  const camera = useThree<PerspectiveCamera>();
 
-  useFrame((_state, delta) => {
+  useFrame(({ viewport }, delta) => {
+    // make sure spheres are typed correctly
     if (!sphereRef.current) return;
     const sphereMesh = sphereRef.current;
 
-    if (sphereMesh.position.z >= SETTINGS.zMinMax[0]) {
-      // case: sphere is too close to screen => reset position
+    // if sphere is too close to screen => reset position & colour
+    if (sphereMesh.position.z >= sphereGen.zMinMax[0]) {
       sphereMesh.position.set(
-        ...getRandomCoordsInView(SETTINGS.zMinMax, SETTINGS.fov, aspect)
+        ...getRandomCoordsInView(sphereGen.zMinMax, camera.fov, viewport.aspect)
       );
       sphereMesh.material.color.set(getRandomColor());
-    } else {
-      damp3(sphereMesh.position, pointerWorld, 50, delta, 2);
-
-      dampC(
-        sphereMesh.material.color,
-        sphereMesh.userData.destColour,
-        0.2,
-        delta
-      );
-      if (
-        Math.abs(
-          sphereMesh.material.color.getHex() -
-            sphereMesh.userData.destColour.getHex()
-        ) < 10 ||
-        sphereMesh.material.color.getHex() > 0xfefefe
-      )
-        sphereMesh.userData.destColour = getRandomColor();
-      sphereMesh.rotateX(Math.random() / 50);
-      sphereMesh.rotateY(Math.random() / 50);
-      sphereMesh.rotateZ(Math.random() / 50);
-
-      // if close to border, change appearance to show that it is going to disappear soon
-      if (sphereMesh.position.z >= SETTINGS.zMinMax[0] - 50) {
-        sphereMesh.material.color.lerp(sphereMesh.userData.destColour, 0.1);
-      }
+      return;
     }
+
+    // move sphere closer to cursor
+    damp3(
+      sphereMesh.position,
+      pointerWorld,
+      sphereMove.posDamp,
+      delta,
+      sphereMove.maxSpeed
+    );
+
+    // rotate sphere
+    sphereMesh.rotateX(Math.random() * sphereAnim.rotateFactor);
+    sphereMesh.rotateY(Math.random() * sphereAnim.rotateFactor);
+    sphereMesh.rotateZ(Math.random() * sphereAnim.rotateFactor);
+
+    // animate colour
+    dampC(
+      sphereMesh.material.color,
+      sphereMesh.userData.destColour,
+      sphereAnim.colourDamp,
+      delta
+    );
+
+    // if close to border, change appearance to show that it is going to disappear soon
+    if (sphereMesh.position.z >= sphereGen.zMinMax[0] - sphereMove.proxThresh)
+      sphereMesh.material.color.lerp(
+        sphereMesh.userData.destColour,
+        sphereAnim.colourLerp
+      );
+
+    // set new colour destination if previous destination reached
+    if (
+      getHexDiff(sphereMesh.material.color, sphereMesh.userData.destColour) <
+      sphereAnim.colourThresh
+    )
+      sphereMesh.userData.destColour = getRandomColor();
   });
 
   return (
@@ -61,7 +78,6 @@ export default function Sphere3D({
       position={initPos}
       ref={sphereRef}
       userData={{ destColour: initColour }}
-      name="sphere"
     >
       <sphereGeometry args={sphereProps} />
       <meshStandardMaterial color={getRandomColor()} wireframe={wireframe} />
@@ -70,8 +86,8 @@ export default function Sphere3D({
 }
 
 interface Props {
-  initPos: ReactThreeFiber.Vector3 | readonly [number, number, number];
+  initPos: Readonly<Tuple<number>>;
   initColour: Color;
-  sphereProps?: readonly [number, number, number];
+  sphereProps?: Readonly<Tuple<number>>;
   wireframe?: boolean;
 }

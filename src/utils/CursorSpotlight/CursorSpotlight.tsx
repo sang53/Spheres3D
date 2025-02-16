@@ -1,24 +1,31 @@
 import { Group, SpotLight } from "three";
 import CursorSphere from "../CursorSphere/CursorSphere";
 import { useEffect, useRef } from "react";
-import { ReactThreeFiber } from "@react-three/fiber";
+import { SETTINGS } from "../../Spheres3D/Settings";
+import { ConstToPrimitive } from "../../Spheres3D/Types";
+
+const { cursorSpot } = SETTINGS;
 
 export default function CursorSpotlight({
-  colour = 0xffffff,
-  intensity = 20000,
-  angle = 0.3,
-  penumbra = 1,
-  decay = 2,
-}: Props) {
+  colour = cursorSpot.colour,
+  intensity = cursorSpot.intensity,
+  angle = cursorSpot.angle,
+  penumbra = cursorSpot.penumbra,
+  decay = cursorSpot.decay,
+}: Props = {}) {
   const spotlightRef = useRef<SpotLight>(null);
   const groupRef = useRef<Group>(null);
 
   useEffect(() => {
-    if (groupRef.current && spotlightRef.current) {
-      spotlightRef.current.target =
-        groupRef.current.getObjectByName("cursorSphere");
-      spotlightRef.current.position.set(0, 0, -1);
-    }
+    if (!groupRef.current || !spotlightRef.current) return;
+
+    // make spotlight target the cursorSphere & therefore pointer
+    const cursorSphere = groupRef.current.getObjectByName("cursorSphere");
+    if (!cursorSphere) throw new Error("Cursor Sphere Not Found");
+    spotlightRef.current.target = cursorSphere;
+
+    // set close to camera to avoid parallax
+    spotlightRef.current.position.set(0, 0, -1);
   }, []);
 
   return (
@@ -37,10 +44,4 @@ export default function CursorSpotlight({
   );
 }
 
-interface Props {
-  colour?: ReactThreeFiber.Color;
-  intensity?: number;
-  angle?: number;
-  penumbra?: number;
-  decay?: number;
-}
+type Props = Partial<ConstToPrimitive<typeof cursorSpot>>;
