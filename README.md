@@ -1,50 +1,19 @@
-# React + TypeScript + Vite
+## **Spheres 3D**
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is a 3D background developed for my portfolio page. It many spheres that move towards the pointer, rotate and change colour.
 
-Currently, two official plugins are available:
+**Features:**
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Spheres actually move towards the real world coordinates of the pointer at z depth -50
+- Spheres are relocated to random coordinates when they hit the z minimum border (currently -100)
+- Spheres change colour closer to the z minimum border
+- A spotlight follows the pointer
+- Spheres change colour faster on hover
+- Spheres are relocated to random coordinates when the pointer leaves the sphere
 
-## Expanding the ESLint configuration
+**Technologies:**
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
-
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
-
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+- Three js
+- React 3 Fiber
+- React
+- TypeScript
