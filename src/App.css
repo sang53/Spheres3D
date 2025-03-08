@@ -1,6 +1,136 @@
-#root,
-body {
-  height: 100vh;
-  width: 100%;
-  background-color: black;
+:root {
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+
+  font-family: system-ui, sans-serif;
+
+  --font-size-large: 40px;
+  --font-size-medplus: 36px;
+  --font-size-med: 28px;
+  --font-size-small: 24px;
+
+  --font-weight-heading: 550;
+  --font-weight-normal: 450;
+
+  --backdrop-dark: rgba(0, 0, 0, 0.5);
+  --backdrop-light: rgba(255, 255, 255, 0.7);
+
+  --bgc-dark: black;
+  --bgc-light: white;
+  --font-light: black;
+  --font-dark: white;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  @media (max-width: 1050px) {
+    --font-size-large: 33px;
+    --font-size-medplus: 30px;
+    --font-size-med: 23px;
+    --font-size-small: 16px;
+  }
+
+  @media (max-width: 500px) {
+    --font-size-large: 30px;
+    --font-size-medplus: 27px;
+    --font-size-med: 21px;
+    --font-size-small: 15px;
+  }
+}
+
+#root {
+  position: relative;
+  user-select: none;
+}
+
+.flex {
+  display: flex;
+  gap: 1rem;
+}
+
+section {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 1rem;
+  scroll-snap-align: center;
+  padding-inline: 1rem;
+
+  > * {
+    z-index: 1;
+  }
+}
+
+ul {
+  width: fit-content;
+  justify-self: center;
+
+  > li {
+    padding-left: 1ch;
+    list-style: var(--curr-li);
+  }
+}
+
+svg {
+  height: 2rem;
+  width: 2rem;
+  cursor: pointer;
+}
+
+a,
+p,
+h1,
+h2 {
+  background-color: var(--curr-backdrop);
+  color: var(--curr-color);
+}
+
+h1,
+h2 {
+  font-weight: var(--font-weight-heading);
+  font-size: var(--font-size-large);
+  text-decoration: underline solid 2px;
+  text-underline-offset: 5px;
+  width: fit-content;
+}
+
+h2 {
+  font-size: var(--font-size-medplus);
+}
+
+a {
+  font-style: italic;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border: 1px solid;
+  cursor: pointer;
+  transition: background-color 500ms ease-out, color 500ms ease-out;
+
+  &:hover {
+    background-color: var(--opp-backdrop);
+    color: var(--opp-color);
+  }
+
+  &:has(svg) {
+    border: none;
+    padding: 0;
+    transition: none;
+    vertical-align: bottom;
+    transition: transform 500ms;
+
+    &:hover {
+      background-color: var(--curr-backdrop);
+      transform: scale(1.2);
+    }
+  }
+}
+
+p {
+  font-weight: var(--font-weight-normal);
+  line-height: 1.5;
 }

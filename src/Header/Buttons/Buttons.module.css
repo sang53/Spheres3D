@@ -1,0 +1,60 @@
+.buttons {
+  display: flex;
+  gap: 0.75rem;
+
+  > button {
+    background-color: inherit;
+    border: none;
+
+    &:last-child > svg {
+      stroke: var(--opp-color);
+      fill: var(--curr-color);
+      transition: fill 500ms ease-out;
+
+      &:hover {
+        animation: rotation 1s 0s infinite forwards;
+      }
+    }
+  }
+}
+
+.dark {
+  composes: buttons;
+
+  > button:first-child > svg {
+    stroke: var(--font-dark);
+    fill: var(--font-light);
+    transition: fill 750ms;
+
+    &:hover {
+      fill: var(--bgc-light);
+    }
+  }
+}
+
+.light {
+  composes: buttons;
+
+  > button:first-child > svg {
+    stroke: var(--font-light);
+    fill: var(--font-dark);
+    transition: stroke 1s, fill 1s, transform 500ms;
+
+    &:hover {
+      fill: var(--bgc-dark);
+      stroke: var(--bgc-light);
+      transform: scale(2);
+      transition: transform 750ms 250ms linear, stroke 500ms, fill 500ms;
+    }
+  }
+}
+
+@keyframes rotation {
+  from {
+    transform: rotateZ(0);
+  }
+
+  to {
+    transform: rotateZ(360deg);
+  }
+}

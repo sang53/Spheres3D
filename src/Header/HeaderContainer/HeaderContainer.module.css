@@ -1,0 +1,42 @@
+.header {
+  width: 100vw;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  padding: 1rem;
+  position: fixed;
+  top: 0;
+  background-blend-mode: overlay;
+  font-size: var(--font-size-small);
+
+  background-color: var(--curr-backdrop);
+  color: var(--curr-color);
+
+  div {
+    align-items: center;
+  }
+
+  > div:first-child svg {
+    transition: fill 500ms;
+    fill: var(--curr-color);
+  }
+}
+
+.dark {
+  composes: header;
+
+  --curr-color: var(--font-dark);
+  --opp-color: var(--font-light);
+  --curr-backdrop: var(--backdrop-dark);
+  --opp-backdrop: var(--backdrop-light);
+}
+
+.light {
+  composes: header;
+
+  --curr-color: var(--font-light);
+  --opp-color: var(--font-dark);
+  --curr-backdrop: var(--backdrop-light);
+  --opp-backdrop: var(--backdrop-dark);
+}

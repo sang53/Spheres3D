@@ -1,8 +1,8 @@
 import { Group, SpotLight } from "three";
 import CursorSphere from "../CursorSphere/CursorSphere";
 import { useEffect, useRef } from "react";
-import { SETTINGS } from "../../Spheres3D/Settings";
-import { ConstToPrimitive } from "../../Spheres3D/Types";
+import { SETTINGS } from "../Settings";
+import { ConstToPrimitive } from "../Types";
 
 const { cursorSpot } = SETTINGS;
 
@@ -12,6 +12,7 @@ export default function CursorSpotlight({
   angle = cursorSpot.angle,
   penumbra = cursorSpot.penumbra,
   decay = cursorSpot.decay,
+  distance = cursorSpot.distance,
 }: Props = {}) {
   const spotlightRef = useRef<SpotLight>(null);
   const groupRef = useRef<Group>(null);
@@ -37,7 +38,7 @@ export default function CursorSpotlight({
         angle={angle}
         penumbra={penumbra}
         decay={decay}
-        distance={0}
+        distance={distance}
         ref={spotlightRef}
       />
     </group>

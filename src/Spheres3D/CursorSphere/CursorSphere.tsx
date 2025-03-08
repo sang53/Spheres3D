@@ -1,21 +1,21 @@
 import { Color, useFrame } from "@react-three/fiber";
 import { useRef } from "react";
-import { getPointerCoordsAtZ, pointerWorld } from "../Helpers/Helpers";
-import { SETTINGS } from "../../Spheres3D/Settings";
-import { sphereType, Tuple } from "../../Spheres3D/Types";
+import { SETTINGS } from "../Settings";
+import { sphereType, Tuple } from "../Types";
+import { getPointerCoordsAtZ } from "../Helpers/Vector3Helpers";
 
 export default function CursorSphere({
-  depth = SETTINGS.sphereMove.zDepthFocus,
-  sphereProps = SETTINGS.sphereGen.sphereProps,
+  depth = SETTINGS.sphereGen.zMinMax[0],
+  sphereProps,
 }: Props) {
   const sphereRef = useRef<sphereType>(null);
 
-  useFrame((state) => {
+  useFrame(() => {
     if (!sphereRef.current) return;
 
-    // update pointerWorld Vector3 to line up with pointer at z = -depth
-    getPointerCoordsAtZ(state, pointerWorld, depth);
-    sphereRef.current.position.set(pointerWorld.x, pointerWorld.y, -depth);
+    // move sphere position in line with pointer at z = depth
+    const cursorPos = getPointerCoordsAtZ(-depth);
+    sphereRef.current.position.set(cursorPos.x, cursorPos.y, cursorPos.z);
   });
 
   return (

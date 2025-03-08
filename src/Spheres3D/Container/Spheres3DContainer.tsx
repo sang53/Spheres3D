@@ -1,28 +1,25 @@
-import { RootState, useFrame, useThree } from "@react-three/fiber";
-import {
-  getRandomColor,
-  getRandomCoordsInView,
-} from "../../utils/Helpers/Helpers";
+import { useFrame } from "@react-three/fiber";
 import { SETTINGS } from "../Settings";
-import Sphere3D from "../Sphere3D/Sphere3D";
-import { useRef } from "react";
-import { Color, Group, PerspectiveCamera } from "three";
 import { sphereType } from "../Types";
+import Sphere3D from "../Sphere3D/Sphere3D";
+import { useContainerHook } from "./useContainerHook";
+import { resetSphere } from "../Helpers/Vector3Helpers";
+import { memo, useMemo } from "react";
 
-const { sphereGen, sphereAnim } = SETTINGS;
+const { sphereGen } = SETTINGS;
 
-export default function Spheres3DContainer() {
-  const { camera, viewport, raycaster } = useThree<
-    RootState & { camera: PerspectiveCamera }
-  >();
-  const groupRef = useRef<Group>(null);
-  let hovObjs: Array<sphereType> = [];
+export default memo(Spheres3DContainer);
+function Spheres3DContainer() {
+  const [raycaster, groupRef] = useContainerHook();
 
-  const spherePos = Array.from({ length: sphereGen.num }, () =>
-    getRandomCoordsInView(sphereGen.zMinMax, camera.fov, viewport.aspect)
-  );
+  // memoise sphere to prevent re-render on theme toggle
+  const spheres = useMemo(() => {
+    return Array.from({ length: sphereGen.num }, (_v, idx) => {
+      return <Sphere3D key={idx} />;
+    });
+  }, []);
 
-  useFrame(({ pointer, viewport }) => {
+  useFrame(({ pointer, camera }) => {
     if (!groupRef.current) return;
 
     // get all objects that intersects with pointer
@@ -32,41 +29,11 @@ export default function Spheres3DContainer() {
       true
     );
 
-    // previously hovered object not hit => reset position && colour
-    hovObjs.forEach((hovObj) => {
-      if (intersects.some((hitObj) => hitObj.object === hovObj)) return;
-
-      // if previously hovered object not hovered anymore => reset position & colour
-      hovObj.position.set(
-        ...getRandomCoordsInView(sphereGen.zMinMax, camera.fov, viewport.aspect)
-      );
-      hovObj.material.color.set(getRandomColor());
-    });
-
-    // all hovered objects => speed up colour change
+    // reset all spheres that are hovered
     intersects.forEach(({ object }) => {
-      if (object.userData.destColour instanceof Color)
-        object.material.color.lerp(
-          object.userData.destColour,
-          sphereAnim.colourLerp
-        );
+      resetSphere(object);
     });
-
-    // reassign array of hovered objects for next frame
-    hovObjs = intersects.map(({ object }) => object);
   });
 
-  return (
-    <group ref={groupRef}>
-      {spherePos.map((position, idx) => {
-        return (
-          <Sphere3D
-            key={idx}
-            initPos={position}
-            initColour={getRandomColor()}
-          />
-        );
-      })}
-    </group>
-  );
+  return <group ref={groupRef}>{spheres}</group>;
 }
