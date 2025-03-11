@@ -6,7 +6,7 @@ export default memo(NavBar);
 const { active, inactive } = classes;
 
 function NavBar() {
-  const [bg, setBg] = useState("sphere3d");
+  const [bg] = useState("sphere3d");
 
   return (
     <nav className={classes.navBar}>

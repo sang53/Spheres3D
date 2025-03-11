@@ -1,5 +1,8 @@
 ## **Spheres 3D**
 
+_Portfolio link: https://portfolio-sang-won-cho.netlify.app/_
+_Deployed link: https://spheres3d.netlify.app/_
+
 This project is a 3D background developed for my portfolio page.
 
 It features 250 randomly placed spheres that move towards the pointer, rotate and change colour.
