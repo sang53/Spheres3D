@@ -1,7 +1,7 @@
 ## **Spheres 3D**
 
-_Portfolio link: https://portfolio-sang-won-cho.netlify.app/_
-_Deployed link: https://spheres3d.netlify.app/_
+_[Portfolio link](https://sang53.github.io/)_
+_[Deployed link](https://sang53.github.io/Spheres3D/)_
 
 This project is a 3D background developed for my portfolio page.
 

@@ -15,4 +15,5 @@ export default defineConfig({
       reporter: ["html", "text"],
     },
   },
+  base: "/Spheres3D/",
 });
