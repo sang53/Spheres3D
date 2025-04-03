@@ -1,6 +1,8 @@
 export const SETTINGS = {
   sphereGen: {
-    num: 250,
+    num: Math.floor(
+      ((window.screen.height * window.screen.width) / (1920 * 1080)) * 250 // 250 spheres baseline for 1920 x 1080 screen
+    ),
     sphereProps: [1, 11, 5],
     zMinMax: [150, 400],
   },
