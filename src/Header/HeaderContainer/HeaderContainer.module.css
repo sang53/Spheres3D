@@ -1,20 +1,20 @@
 .header {
   width: 100vw;
   z-index: 2;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: max-content 1fr max-content;
+  grid-auto-flow: dense;
+  row-gap: 0.5rem;
   padding: 1rem;
   position: fixed;
   top: 0;
-  background-blend-mode: overlay;
   font-size: var(--font-size-small);
 
   background-color: var(--curr-backdrop);
   color: var(--curr-color);
 
-  div {
-    align-items: center;
+  @media (max-width: 1000px) {
+    grid-template-columns: max-content 1fr;
   }
 
   > div:first-child svg {

@@ -1,6 +1,7 @@
 .buttons {
   display: flex;
   gap: 0.75rem;
+  justify-self: end;
 
   > button {
     background-color: inherit;

@@ -1,7 +1,10 @@
 .navBar {
   display: flex;
-  gap: 3rem;
+  justify-content: space-evenly;
   align-items: center;
+  justify-self: center;
+  width: 100%;
+  max-width: 800px;
 
   a {
     transition: transform 0.4s ease-out, border-style 0.4s;
@@ -10,6 +13,10 @@
       background-color: var(--curr-backdrop);
       color: var(--curr-color);
     }
+  }
+
+  @media (max-width: 1000px) {
+    grid-column: 1 / span 2;
   }
 }
 
